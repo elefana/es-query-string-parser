@@ -67,7 +67,7 @@ project(":es-query-string-parser") {
     version = '1.0.0-SNAPSHOT'
     description = 'Parser for Elasticsearch Query String syntax'
     
-    task copyJarnSourcesToProject(type: Copy, dependsOn: project(":es-query-string-antlr").compileJava) {
+    task copyAntlrSourcesToProject(type: Copy, dependsOn: project(":es-query-string-antlr").compileJava) {
 		from "$projectDir/../es-query-string-antlr/build/generated-src/antlr/main/"
 		into "$projectDir/src/main/java/com/elefana/esqs/antlr/"
 	}
@@ -100,7 +100,7 @@ project(":es-query-string-parser") {
 		testCompile "org.jmock:jmock-junit4:$jmockVersion"	
 	}
 	
-	compileJava.dependsOn copyJarnSourcesToProject
+	compileJava.dependsOn copyAntlrSourcesToProject
 	
 	if(project.hasProperty('ossrhUser') && project.hasProperty("release")) {
 		signing {
