@@ -24,23 +24,21 @@ queryExpression
     ;
 
 fieldQuery
-    : FieldNameLiteral COLON queryTermExpression
+    : FieldNameLiteral queryTermExpression
     | queryTermExpression
     ;
 
 FieldNameLiteral
-	: FieldNameChar+
+	: FieldNameChar+ COLON
 	;
 
 fragment
 FieldNameChar
-	: [a-z]
-	| [A-Z]
-	| [0-9]
-    | '_'
-	| '\\'
-    | '.'
-    | '*'
+	: LETTERORDIGIT
+    | UNDERSCORE
+	| BACKSLASH
+    | FULLSTOP
+    | ASTERISK
 	;
 
 queryTermExpression
@@ -53,28 +51,19 @@ queryTermExpression
     ;
 
 termExpression
-    : TermChar+
+    : termChar+
     ;
 
-fragment
-TermChar
-	: [a-z]
-    | [A-Z]
-	| [0-9]
-    | '_'
-    | '.'
-    | '*'
-    | '?'
-    | '~'
+termChar
+	: ~WHITESPACE
     ;
 
 phraseExpression
-    : DOUBLEQUOTE PhraseChar+ DOUBLEQUOTE
+    : DOUBLEQUOTE phraseChar+ DOUBLEQUOTE
     ;
 
-fragment
-PhraseChar
-    : ~('"')
+phraseChar
+    : ~DOUBLEQUOTE
     ;
 
 queryOperator
@@ -94,7 +83,14 @@ OR
 	| 'or'
 	;
 
+LETTERORDIGIT: [a-zA-Z0-9];
+BACKSLASH: '\\';
+UNDERSCORE: '_';
 DOUBLEQUOTE: '"';
+FULLSTOP: '.';
+ASTERISK: '*';
 COLON: ':';
+QUESTIONMARK: '?';
+TILDA: '~';
 WHITESPACE: [ \t];
 NEWLINE : ( '\r'? '\n' | '\r' );

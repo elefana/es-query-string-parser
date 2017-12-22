@@ -20,7 +20,7 @@ import org.junit.Test;
 import junit.framework.Assert;
 
 public class EsQueryStringTest implements EsQueryStringWalker {
-	private final StringBuilder queryResult = new StringBuilder();
+	private StringBuilder queryResult = new StringBuilder();
 	
 	@Test
 	public void testDefaultFieldQuery() {
@@ -35,23 +35,31 @@ public class EsQueryStringTest implements EsQueryStringWalker {
 		queryString.walk(this);
 		Assert.assertEquals("status='active'", queryResult.toString());
 	}
+
+	@Test
+	public void testPhraseFieldQuery() {
+		EsQueryString queryString = EsQueryString.parse("status:\"active phrase\"");
+		queryString.walk(this);
+		Assert.assertEquals("status='active phrase'", queryResult.toString());
+	}
 	
 	@Test
 	public void testGroupedFieldQuery() {
 		EsQueryString queryString = EsQueryString.parse("status:(active inactive)");
 		queryString.walk(this);
-		Assert.assertEquals("status='active' DEFAULT status='inactive'", queryResult.toString());
+		Assert.assertEquals("(status='active' DEFAULT status='inactive')", queryResult.toString());
 	}
 	
 	@Test
 	public void testGroupedOperatorFieldQuery() {
 		EsQueryString queryString = EsQueryString.parse("status:(active OR inactive)");
 		queryString.walk(this);
-		Assert.assertEquals("status='active' OR status='inactive'", queryResult.toString());
+		Assert.assertEquals("(status='active' OR status='inactive')", queryResult.toString());
 		
+		queryResult = new StringBuilder();
 		queryString = EsQueryString.parse("status:(active AND inactive)");
 		queryString.walk(this);
-		Assert.assertEquals("status='active' AND status='inactive'", queryResult.toString());
+		Assert.assertEquals("(status='active' AND status='inactive')", queryResult.toString());
 	}
 	
 	@Test
@@ -63,7 +71,10 @@ public class EsQueryStringTest implements EsQueryStringWalker {
 
 	@Override
 	public void beginField(EsQueryOperator operator, EsFieldQuery field) {
-		
+		if(queryResult.length() == 0) {
+			return;
+		}
+		queryResult.append(" " + operator.name() + " ");
 	}
 
 	@Override
@@ -72,16 +83,12 @@ public class EsQueryStringTest implements EsQueryStringWalker {
 	}
 
 	@Override
-	public void append(EsFieldQuery field, boolean phrase, String term) {
+	public void append(EsFieldQuery field, boolean phraseQuery, String term) {
 		queryResult.append(field.getFieldName());
 		queryResult.append("=");
-		if(phrase) {
-			queryResult.append(term);
-		} else {
-			queryResult.append("'");
-			queryResult.append(term);
-			queryResult.append("'");
-		}
+		queryResult.append("'");
+		queryResult.append(term);
+		queryResult.append("'");
 	}
 
 	@Override

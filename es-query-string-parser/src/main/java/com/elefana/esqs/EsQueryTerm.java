@@ -22,7 +22,12 @@ public class EsQueryTerm implements EsQueryExpression {
 	public EsQueryTerm(boolean phrase, String term) {
 		super();
 		this.phrase = phrase;
-		this.term = term;
+
+		if(phrase) {
+			this.term = term.substring(1, term.length() - 1);
+		} else {
+			this.term = term;
+		}
 	}
 
 	public boolean isPhrase() {

@@ -34,7 +34,9 @@ public class EsFieldQuery {
 	
 	public void walk(EsQueryStringWalker walker) {
 		walker.beginField(operator, this);
-		
+		if(queryExpression != null) {
+			queryExpression.walk(this, walker);
+		}
 		walker.endField(this);
 		
 		if(nextQuery == null) {

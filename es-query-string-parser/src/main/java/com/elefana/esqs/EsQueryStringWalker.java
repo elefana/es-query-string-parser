@@ -23,7 +23,7 @@ public interface EsQueryStringWalker {
 	
 	public void append(EsFieldQuery field, EsQueryOperator operator);
 
-	public void append(EsFieldQuery field, boolean phrase, String term);
+	public void append(EsFieldQuery field, boolean phraseQuery, String term);
 	
 	public void endGrouping();
 	

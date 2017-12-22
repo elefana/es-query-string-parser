@@ -66,7 +66,8 @@ public class EsQueryString extends EsQueryStringBaseListener {
 
 	private void parseFieldQuery(EsFieldQuery query, FieldQueryContext fieldQueryContext) {
 		if (fieldQueryContext.FieldNameLiteral() != null) {
-			query.setFieldName(fieldQueryContext.FieldNameLiteral().getText());
+			String fieldNameLiteral = fieldQueryContext.FieldNameLiteral().getText();
+			query.setFieldName(fieldNameLiteral.substring(0, fieldNameLiteral.length() - 1));
 		}
 		query.setQueryExpression(parseQueryExpression(fieldQueryContext.queryTermExpression()));
 	}
