@@ -1,5 +1,9 @@
 .gradle
-/build/
+build/
+bin/
+
+# Ignore auto-generated files
+es-query-string-parser/src/main/java/com/elefana/esqs/antlr
 
 # Ignore Gradle GUI config
 gradle-app.setting
@@ -12,3 +16,7 @@ gradle-app.setting
 
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
+
+.classpath
+.project
+.settings/

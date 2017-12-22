@@ -1,0 +1,3 @@
+include "es-query-string-antlr", "es-query-string-parser"
+
+rootProject.name = 'es-query-string-parent'

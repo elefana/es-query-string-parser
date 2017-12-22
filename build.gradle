@@ -1,0 +1,155 @@
+buildscript {
+    repositories {
+    	mavenLocal()
+        mavenCentral()
+        jcenter()
+        maven { url 'https://plugins.gradle.org/m2/' }
+    }
+    dependencies {
+		classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.9.0'
+    }
+}
+
+allprojects {
+    apply plugin: "eclipse"
+    apply plugin: "idea"
+    apply plugin: "maven"
+
+    ext {
+		antlrVersion = '4.6'
+		
+		junitVersion = '4.11'
+		jmockVersion = '2.6.0'
+    }
+
+	repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+    }
+    
+    if(project.hasProperty('ossrhUser') && project.hasProperty("release")) {
+		apply plugin: "io.codearte.nexus-staging"
+		
+		nexusStaging {
+			packageGroup = 'com.elefana'
+			username = ossrhUser
+			password = ossrhPassword
+		}
+	}
+}
+
+project(":es-query-string-antlr") {
+	apply plugin: 'antlr'
+
+	description = 'ANTLR4 grammar for ES Query Strings'
+	
+	sourceCompatibility = 1.7
+	targetCompatibility = 1.7
+	
+	dependencies {
+		antlr "org.antlr:antlr4:$antlrVersion"
+	}
+	
+	generateGrammarSource {
+		arguments += ["-package", "com.elefana.esqs.antlr"]
+	}
+}
+
+project(":es-query-string-parser") {
+	apply plugin: "java"
+	apply plugin: "signing"
+	
+	sourceCompatibility = 1.7
+	targetCompatibility = 1.7
+	
+	group = 'com.elefana'
+    version = '1.0.0-SNAPSHOT'
+    description = 'Parser for Elasticsearch Query String syntax'
+    
+    task copyJarnSourcesToProject(type: Copy, dependsOn: project(":es-query-string-antlr").compileJava) {
+		from "$projectDir/../es-query-string-antlr/build/generated-src/antlr/main/"
+		into "$projectDir/src/main/java/com/elefana/esqs/antlr/"
+	}
+    
+    task javadocJar(type: Jar) {
+		classifier = 'javadoc'
+		from javadoc
+	}
+
+	task sourcesJar(type: Jar) {
+		classifier = 'sources'
+		from sourceSets.main.allSource
+	}
+	
+	task docs(type: Javadoc) {
+		source project.sourceSets.main.allJava
+		classpath = files(project.sourceSets.main.compileClasspath)
+		destinationDir = new File(project.parent.projectDir, "docs/javadoc/${version}")
+	}
+	
+	artifacts {
+		archives javadocJar, sourcesJar
+	}
+	
+	dependencies {
+		compile "org.antlr:antlr4-runtime:$antlrVersion"
+		
+		testCompile "junit:junit:$junitVersion"
+		testCompile "org.jmock:jmock-legacy:$jmockVersion"
+		testCompile "org.jmock:jmock-junit4:$jmockVersion"	
+	}
+	
+	compileJava.dependsOn copyJarnSourcesToProject
+	
+	if(project.hasProperty('ossrhUser') && project.hasProperty("release")) {
+		signing {
+			sign configurations.archives
+		}
+		
+		uploadArchives {
+			repositories {
+				mavenDeployer {
+					// POM signature
+					beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+					// Target repository
+					repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+						authentication(userName: ossrhUser, password: ossrhPassword)
+					}
+					pom.project {
+						name project.name
+						description project.description
+						packaging 'jar'
+						url 'https://github.com/elefana/es-query-string-parser'
+	
+						scm {
+							connection 'scm:git:https://github.com/elefana/es-query-string-parser.git'
+							developerConnection 'scm:git:git@github.com:elefana/es-query-string-parser.git'
+							url 'https://github.com/elefana/es-query-string-parser.git'
+						}
+	
+						licenses {
+							license {
+								name 'The MIT License (MIT)'
+								url 'https://opensource.org/licenses/MIT'
+								distribution 'repo'
+							}
+						}
+	
+						developers {
+							developer {
+								id = 'tomcashman'
+								name = 'Thomas Cashman'
+								email = 'thomascashman404@gmail.com'
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.3'
+}
