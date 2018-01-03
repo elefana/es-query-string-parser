@@ -130,8 +130,8 @@ project(":es-query-string-parser") {
 	
 						licenses {
 							license {
-								name 'The MIT License (MIT)'
-								url 'https://opensource.org/licenses/MIT'
+								name 'Apache License 2.0'
+								url 'https://opensource.org/licenses/Apache-2.0'
 								distribution 'repo'
 							}
 						}
