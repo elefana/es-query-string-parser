@@ -64,7 +64,7 @@ project(":es-query-string-parser") {
 	targetCompatibility = 1.7
 	
 	group = 'com.elefana'
-    version = '1.0.0'
+    version = '1.0.1-SNAPSHOT'
     description = 'Parser for Elasticsearch Query String syntax'
     
     task copyAntlrSourcesToProject(type: Copy, dependsOn: project(":es-query-string-antlr").compileJava) {
