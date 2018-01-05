@@ -58,8 +58,9 @@ public class EsQueryString extends EsQueryStringBaseListener {
 				break;
 			}
 
-			mostRecentQuery = mostRecentQuery.appendQuery(
-					queryExpressionContext.queryOperator().OR() != null ? EsQueryOperator.OR : EsQueryOperator.AND);
+			mostRecentQuery = mostRecentQuery.appendQuery(queryExpressionContext.queryOperator() == null
+					? EsQueryOperator.DEFAULT
+					: (queryExpressionContext.queryOperator().OR() != null ? EsQueryOperator.OR : EsQueryOperator.AND));
 			queryExpressionContext = queryExpressionContext.queryExpression();
 		}
 	}

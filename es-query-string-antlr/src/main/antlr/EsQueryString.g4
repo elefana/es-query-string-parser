@@ -20,7 +20,7 @@ query
     ;
 
 queryExpression
-    : fieldQuery (WHITESPACE queryOperator WHITESPACE queryExpression)?
+    : fieldQuery ((WHITESPACE queryOperator)? WHITESPACE queryExpression)?
     ;
 
 fieldQuery

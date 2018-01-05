@@ -15,9 +15,8 @@
  ******************************************************************************/
 package com.elefana.esqs;
 
+import org.junit.Assert;
 import org.junit.Test;
-
-import junit.framework.Assert;
 
 public class EsQueryStringTest implements EsQueryStringWalker {
 	private StringBuilder queryResult = new StringBuilder();
@@ -27,6 +26,16 @@ public class EsQueryStringTest implements EsQueryStringWalker {
 		EsQueryString queryString = EsQueryString.parse("value");
 		queryString.walk(this);
 		Assert.assertEquals("null='value'", queryResult.toString());
+		
+		queryResult = new StringBuilder();
+		queryString = EsQueryString.parse("value test");
+		queryString.walk(this);
+		Assert.assertEquals("null='value' DEFAULT null='test'", queryResult.toString());
+		
+		queryResult = new StringBuilder();
+		queryString = EsQueryString.parse("\"value test1\" \"value test2\"");
+		queryString.walk(this);
+		Assert.assertEquals("null='value test1' DEFAULT null='value test2'", queryResult.toString());
 	}
 	
 	@Test
