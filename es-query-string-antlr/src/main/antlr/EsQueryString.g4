@@ -39,6 +39,7 @@ FieldNameChar
 	| BACKSLASH
     | FULLSTOP
     | ASTERISK
+    | MINUS
 	;
 
 queryTermExpression
@@ -86,6 +87,7 @@ OR
 LETTERORDIGIT: [a-zA-Z0-9];
 BACKSLASH: '\\';
 UNDERSCORE: '_';
+MINUS: '-';
 DOUBLEQUOTE: '"';
 FULLSTOP: '.';
 ASTERISK: '*';
