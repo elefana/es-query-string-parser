@@ -85,6 +85,13 @@ public class EsQueryStringTest implements EsQueryStringWalker {
 		Assert.assertEquals("test_a_c-d-e_f-g_h='1234567890'", queryResult.toString());
 	}
 
+	@Test
+	public void testQueryWithPlusChar() {
+		EsQueryString queryString = EsQueryString.parse("test_a_c-d+e_f+g_h:1234567890");
+		queryString.walk(this);
+		Assert.assertEquals("test_a_c-d+e_f+g_h='1234567890'", queryResult.toString());
+	}
+
 	@Override
 	public void beginField(EsQueryOperator operator, EsFieldQuery field) {
 		if(queryResult.length() == 0) {

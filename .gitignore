@@ -1,6 +1,7 @@
 .gradle
 build/
 bin/
+out/
 
 # Ignore auto-generated files
 es-query-string-parser/src/main/java/com/elefana/esqs/antlr
